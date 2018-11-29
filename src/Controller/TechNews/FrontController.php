@@ -4,6 +4,7 @@ namespace App\Controller\TechNews;
 
 
 
+use App\Article\Provider\YamlProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,11 +13,19 @@ class FrontController extends Controller
 {
     /**
      * Page d'accueil de notre site internet
+     * @param YamlProvider $yamlProvider
+     * @return Response
      */
-    public function index()
+    public function index(YamlProvider $yamlProvider)
     {
+
+        # Récupération des articles depuis le YamlProvider
+        $articles = $yamlProvider->getArticles();
+
         # return new Response("<html><body><h1>PAGE D'ACCUEIL</h1></body></html>");
-        return $this->render('front/index.html.twig');
+        return $this->render('front/index.html.twig', [
+            'articles' => $articles
+        ]);
     }
 
     /**

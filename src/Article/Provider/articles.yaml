@@ -1,0 +1,49 @@
+data:
+    article1 :
+        id : 1
+        titre : 'Zéro SDF, retraites supérieures à 1 200 euros, salaire maximum à 15 000 euros... Découvrez la longue liste des revendications des "gilets jaunes"'
+        contenu : '<p>Le mouvement des "gilets jaunes" dépasse désormais la question des prix du carburant. Dans un long communiqué envoyé aux médias et aux députés, jeudi 29 novembre, la délégation du mouvement liste une série&nbsp;de&nbsp;revendications qu''il souhaite voir appliquées. <em>"Députés de France, nous vous faisons part des Directives du peuple pour que vous les transposiez en LOI (...) Obéissez à la volonté du peuple. Faites appliquer ces Directives"</em>, écrivent les "gilets jaunes".&nbsp;<span>Des porte-parole de la délégation doivent être reçus, vendredi à 14&nbsp;heures, par le Premier ministre, Edouard Philippe, et le ministre de la Transition écologique, François de Rugy.&nbsp;</span></p>'
+        featuredimage : '16564743.jpg'
+        special : false
+        spotlight : true
+        datecreation : 2018-11-29 09:37:18
+        categorie:
+            id : 2
+            libelle : 'Economie'
+        auteur:
+            id : 1
+            prenom : 'Hugo'
+            nom : 'LIEGEARD'
+            email : 'hugo.liegeard@tech.news'
+    article2:
+        id: 2
+        titre: 'Fiscalité : la France toujours championne d''Europe des impôts et des cotisations sociales'
+        contenu: '<p>Eurostat, l''organisme d''études statistiques de l''Union européenne, a révélé mercredi que les impôts et les cotisations sociales représentaient 48,4% du PIB en France. La part des recettes fiscales sur le PIB français est ainsi la plus élevée d''Europe.</p>'
+        featuredimage: '16563687.jpg'
+        special: false
+        spotlight: true
+        datecreation: 2018-11-28 09:37:18
+        categorie:
+            id: 2
+            libelle: 'Economie'
+        auteur:
+            id: 1
+            prenom: 'Hugo'
+            nom: 'LIEGEARD'
+            email: 'hugo.liegeard@tech.news'
+    article3:
+        id: 3
+        titre: 'La spécialité sciences de la vie et de la Terre "incontournable" pour entrer en médecine : comment l''orientation des étudiants va se jouer dès la seconde'
+        contenu: '<p>L''enseignement des SVT va devenir "incontournable" dès 2021 dans la procédure de Parcoursup pour intégrer le premier cycle de médecine. Avec la réforme en cours du lycée et du bac, cette annonce reflète une réalité qui va bientôt s''imposer aux lycéens : ils vont devoir faire des choix stratégiques pour leur orientation de plus en plus tôt.</p>'
+        featuredimage: '16557015.jpg'
+        special: false
+        spotlight: false
+        datecreation: 2018-11-27 09:37:18
+        categorie:
+            id: 3
+            libelle: 'Education'
+        auteur:
+            id: 2
+            prenom: 'Sylviane'
+            nom: 'PEREZ'
+            email: 'sylvianne.perez@tech.news'
