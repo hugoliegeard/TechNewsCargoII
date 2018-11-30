@@ -54,6 +54,11 @@ class Membre
     private $articles;
 
     /**
+     * @ORM\Column(type="array")
+     */
+    private $roles = [];
+
+    /**
      * Membre constructor.
      */
     public function __construct()
@@ -137,5 +142,37 @@ class Membre
         $this->derniereConnexion = $derniereConnexion;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getArticles()
+    {
+        return $this->articles;
+    }
+
+    /**
+     * @param mixed $articles
+     */
+    public function setArticles($articles): void
+    {
+        $this->articles = $articles;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRoles()
+    {
+        return $this->roles;
+    }
+
+    /**
+     * @param mixed $roles
+     */
+    public function setRoles($roles): void
+    {
+        $this->roles = $roles;
     }
 }

@@ -65,6 +65,11 @@ class Article
      */
     private $membre;
 
+    public function __construct()
+    {
+        $this->dateCreation = new \DateTime();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -164,10 +169,13 @@ class Article
 
     /**
      * @param mixed $categorie
+     * @return Article
      */
-    public function setCategorie($categorie): void
+    public function setCategorie($categorie): self
     {
         $this->categorie = $categorie;
+
+        return $this;
     }
 
     /**

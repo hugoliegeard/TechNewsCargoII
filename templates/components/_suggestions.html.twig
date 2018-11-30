@@ -6,10 +6,9 @@
                 'slug': article.slug,
                 'id': article.id
             }) }}">
-                <img alt="{{ article.titre }}"
-                     src="{{ asset('images/product/'~article.featuredimage) }}"/>
+                <img alt="{{ article.titre }}" src="{{ asset('images/product/'~article.featuredimage) }}">
             </a>
-            <a href="{{ path('index_categorie', { 'slug' : article.categorie.slug }) }}" class="cate-tag">{{ article.categorie.nom }}</a>
+            <a href="#" class="cate-tag">{{ article.categorie.nom }}</a>
         </div>
         <h3><a href="{{ path('index_article', {
                 'categorie': article.categorie.slug,

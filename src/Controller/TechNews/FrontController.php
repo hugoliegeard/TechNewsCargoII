@@ -3,11 +3,13 @@
 namespace App\Controller\TechNews;
 
 
-
 use App\Article\Provider\YamlProvider;
+use App\Entity\Article;
+use App\Entity\Categorie;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Yaml\Tests\A;
 
 class FrontController extends Controller
 {
@@ -20,11 +22,18 @@ class FrontController extends Controller
     {
 
         # Récupération des articles depuis le YamlProvider
-        $articles = $yamlProvider->getArticles();
+        # $articles = $yamlProvider->getArticles();
+
+        $repository = $this->getDoctrine()
+            ->getRepository(Article::class);
+
+        $articles = $repository->findBy([],['id' => 'DESC']);
+        $spotlight = $repository->findSpotlightArticles();
 
         # return new Response("<html><body><h1>PAGE D'ACCUEIL</h1></body></html>");
         return $this->render('front/index.html.twig', [
-            'articles' => $articles
+            'articles' => $articles,
+            'spotlight' => $spotlight
         ]);
     }
 
@@ -37,12 +46,30 @@ class FrontController extends Controller
      *     methods={"GET"},
      *     requirements={"slug":"\w+"})
      * @param $slug
+     * @param Categorie $categorie
      * @return Response
      */
-    public function categorie($slug)
+    public function categorie($slug, Categorie $categorie = null)
     {
         # return new Response("<html><body><h1>PAGE CATEGORIE : $slug</h1></body></html>");
-        return $this->render('front/categorie.html.twig');
+
+        # Méthode 1 :
+        # $categorie = $this->getDoctrine()
+        #    ->getRepository(Categorie::class)
+        #    ->findOneBy(['slug' => $slug]);
+        # $articles = $categorie->getArticles();
+
+        # Méthode 2 :
+        # $articles = $this->getDoctrine()
+        #     ->getRepository(Categorie::class)
+        #     ->findOneBySlug($slug)
+        #     ->getArticles();
+
+        # Méthode 3 :
+        return $this->render('front/categorie.html.twig', [
+            'articles'  => $categorie->getArticles(),
+            'categorie' => $categorie
+        ]);
     }
 
     /**
@@ -52,13 +79,53 @@ class FrontController extends Controller
      * @param $id
      * @param $slug
      * @param $categorie
+     * @param Article $article
      * @return Response
      */
-    public function article($id, $slug, $categorie)
+    public function article($id,
+                            $slug,
+                            $categorie,
+                            Article $article = null)
     {
         # Exemple d'URL
         # politique/les-gilets-jaunes-mettent-le-feu-a-l-elysee_684651.html
 
-        return $this->render('front/article.html.twig');
+        # $article = $this->getDoctrine()
+        #     ->getRepository(Article::class)
+        #     ->find($id);
+
+        # On s'assure que l'article ne soit pas null.
+        if (null === $article) {
+
+            # On génère une exception
+            # throw $this->createNotFoundException(
+            #     "Nous n'avons pas trouvé votre article ID : " . $id
+            # );
+
+            # Ou, on redirige l'utilisateur sur la page d'accueil
+            return $this->redirectToRoute('index', [],
+                Response::HTTP_MOVED_PERMANENTLY);
+        }
+
+        # Vérification du SLUG
+        if( $article->getSlug() !== $slug
+            || $article->getCategorie()->getSlug() !== $categorie ) {
+            return $this->redirectToRoute('index_article', [
+                'categorie' => $article->getCategorie()->getSlug(),
+                'slug' => $article->getSlug(),
+                'id' => $id
+            ]);
+        }
+
+        # Récupération des suggestions
+        $suggestions = $this->getDoctrine()
+            ->getRepository(Article::class)
+            ->findArticlesSuggestions($article->getId(), $article->getCategorie()->getId());
+
+        # Transmission des données à la vue
+        return $this->render('front/article.html.twig', [
+            'article' => $article,
+            'suggestions' => $suggestions
+        ]);
     }
 }
