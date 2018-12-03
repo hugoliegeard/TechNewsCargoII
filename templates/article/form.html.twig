@@ -1,0 +1,19 @@
+{% extends "layout.html.twig" %}
+
+{% set active = "new-article" %}
+
+{% block page_title %}
+    Rédiger un Article
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-xs-10 col-xs-offset-1">
+            <h3>Rédiger un Article</h3>
+            {{ form(form) }}
+        </div>
+    </div>
+
+{% endblock %}
+

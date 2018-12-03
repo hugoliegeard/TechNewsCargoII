@@ -27,7 +27,7 @@ class FrontController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository(Article::class);
 
-        $articles = $repository->findBy([],['id' => 'DESC']);
+        $articles = $repository->findBy([], ['id' => 'DESC']);
         $spotlight = $repository->findSpotlightArticles();
 
         # return new Response("<html><body><h1>PAGE D'ACCUEIL</h1></body></html>");
@@ -65,9 +65,15 @@ class FrontController extends Controller
         #     ->findOneBySlug($slug)
         #     ->getArticles();
 
+        if (null === $categorie) {
+            # Ou, on redirige l'utilisateur sur la page d'accueil
+            return $this->redirectToRoute('index', [],
+                Response::HTTP_MOVED_PERMANENTLY);
+        }
+
         # Méthode 3 :
         return $this->render('front/categorie.html.twig', [
-            'articles'  => $categorie->getArticles(),
+            'articles' => $categorie->getArticles(),
             'categorie' => $categorie
         ]);
     }
@@ -108,8 +114,8 @@ class FrontController extends Controller
         }
 
         # Vérification du SLUG
-        if( $article->getSlug() !== $slug
-            || $article->getCategorie()->getSlug() !== $categorie ) {
+        if ($article->getSlug() !== $slug
+            || $article->getCategorie()->getSlug() !== $categorie) {
             return $this->redirectToRoute('index_article', [
                 'categorie' => $article->getCategorie()->getSlug(),
                 'slug' => $article->getSlug(),
@@ -126,6 +132,29 @@ class FrontController extends Controller
         return $this->render('front/article.html.twig', [
             'article' => $article,
             'suggestions' => $suggestions
+        ]);
+    }
+
+    /**
+     * Gérer l'affichage de
+     * la sidebar
+     */
+    public function sidebar()
+    {
+        # Récupération du Repository
+        $repository = $this->getDoctrine()
+            ->getRepository(Article::class);
+
+        # Récupérer les 5 derniers articles
+        $articles = $repository->findLatestArticles();
+
+        # Récupérer les articles à la position "special"
+        $specials = $repository->findSpecialArticles();
+
+        # Rendu de la vue
+        return $this->render('components/_sidebar.html.twig', [
+            'articles' => $articles,
+            'specials' => $specials
         ]);
     }
 }

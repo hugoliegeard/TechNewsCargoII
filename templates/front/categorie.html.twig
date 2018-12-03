@@ -1,5 +1,7 @@
 {% extends "layout.html.twig" %}
 
+{% set active = categorie.slug %}
+
 {% block page_title %}
     {{ categorie.nom | title }}
 {% endblock %}
@@ -8,46 +10,59 @@
     <div class="row">
         <!--colleft-->
         <div class="col-md-8 col-sm-12">
-            <div class="box-caption">
-                <span>{{ categorie.nom | title }}</span>
-            </div>
-            <!--list-news-cate-->
-            <div class="list-news-cate">
+            {% if articles is not empty %}
+                <div class="box-caption">
+                    <span>{{ categorie.nom | title }}</span>
+                </div>
+                <!--list-news-cate-->
+                <div class="list-news-cate">
 
-                {% for article in articles %}
-                    <article class="news-cate-item">
-                        <div class="row">
-                            <div class="col-md-5 col-sm-5 col-xs-12">
-                                <a href="{{ path('index_article', {
-                                    'categorie': article.categorie.slug,
-                                    'slug': article.slug,
-                                    'id': article.id
-                                }) }}">
-                                    <img alt="{{ article.titre }}" src="{{ asset('images/product/'~article.featuredimage) }}">
-                                </a>
-                            </div>
-                            <div class="col-md-7 col-sm-7 col-xs-12">
-                                <h3><a href="{{ path('index_article', {
+                    {% for article in articles %}
+                        <article class="news-cate-item">
+                            <div class="row">
+                                <div class="col-md-5 col-sm-5 col-xs-12">
+                                    <a href="{{ path('index_article', {
                                         'categorie': article.categorie.slug,
                                         'slug': article.slug,
                                         'id': article.id
-                                    }) }}">{{ article.titre }}</a></h3>
-                                <div class="meta-post">
-                                    <a href="#">
-                                        {{ article.membre.prenom ~ ' ' ~ article.membre.nom }}
+                                    }) }}">
+                                        <img alt="{{ article.titre }}"
+                                             src="{{ asset('images/product/'~article.featuredimage) }}">
                                     </a>
-                                    <em></em>
-                                    <span>
+                                </div>
+                                <div class="col-md-7 col-sm-7 col-xs-12">
+                                    <h3><a href="{{ path('index_article', {
+                                            'categorie': article.categorie.slug,
+                                            'slug': article.slug,
+                                            'id': article.id
+                                        }) }}">{{ article.titre }}</a></h3>
+                                    <div class="meta-post">
+                                        <a href="#">
+                                            {{ article.membre.prenom ~ ' ' ~ article.membre.nom }}
+                                        </a>
+                                        <em></em>
+                                        <span>
                                         {{ article.datecreation | date('d/m/Y') }}
                                     </span>
+                                    </div>
+                                    {# Ici repose notre accroche #}
                                 </div>
-                                {# Ici repose notre accroche #}
                             </div>
-                        </div>
-                    </article>
-                {% endfor %}
+                        </article>
+                    {% endfor %}
 
-            </div>
+                </div>
+
+            {% else %}
+
+                {#.alert.alert-danger>strong{Aucune publication pour le moment}#}
+                <div class="alert alert-danger">
+                    <strong>
+                        Aucune publication pour le moment dans cette catégorie.
+                    </strong>
+                </div>
+
+            {% endif %}
 
             {#<div class="paging">
                 <a href="#">Prev</a>
@@ -60,7 +75,8 @@
             </div>#}
 
         </div>
-        {% include 'components/_sidebar.html.twig' %}
+        {#{% include 'components/_sidebar.html.twig' %}#}
+        {{ render(controller('App\\Controller\\TechNews\\FrontController::sidebar')) }}
     </div>
 
 {% endblock %}
