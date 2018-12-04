@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ArticleRepository")
@@ -18,6 +19,11 @@ class Article
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Vous devez saisir un titre.")
+     * @Assert\Length(
+     *     max="255",
+     *     maxMessage="Votre titre ne doit dépasser {{ limit }} caractères  "
+     * )
      */
     private $titre;
 
@@ -28,11 +34,16 @@ class Article
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\NotBlank(message="Vous devez saisir un contenu")
      */
     private $contenu;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Image(
+     *     mimeTypesMessage="Vérifiez le format de votre image",
+     *     maxSize="2M", maxSizeMessage="Attention, votre image est trop lourde."
+     * )
      */
     private $featuredImage;
 
@@ -55,6 +66,7 @@ class Article
      * @ORM\ManyToOne(targetEntity="App\Entity\Categorie",
      *     inversedBy="articles")
      * @ORM\JoinColumn(nullable=false)
+     * @Assert\NotNull(message="Vous devez choisir une catégoriew")
      */
     private $categorie;
 
@@ -111,16 +123,14 @@ class Article
         return $this;
     }
 
-    public function getFeaturedImage(): ?string
+    public function getFeaturedImage()
     {
         return $this->featuredImage;
     }
 
-    public function setFeaturedImage(string $featuredImage): self
+    public function setFeaturedImage($featuredImage): void
     {
         $this->featuredImage = $featuredImage;
-
-        return $this;
     }
 
     public function getSpecial(): ?bool

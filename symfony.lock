@@ -1,4 +1,7 @@
 {
+    "behat/transliterator": {
+        "version": "v1.2.0"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -72,6 +75,15 @@
             "branch": "master",
             "version": "1.0",
             "ref": "70062abc2cd58794d2a90274502f81b55cd9951b"
+        }
+    },
+    "friendsofsymfony/ckeditor-bundle": {
+        "version": "2.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "2.0",
+            "ref": "8eb1cd0962ded6a6d6e1e5a9b6d3e888f9f94ff6"
         }
     },
     "jdorn/sql-formatter": {
@@ -153,6 +165,9 @@
         "version": "v4.1.8"
     },
     "symfony/event-dispatcher": {
+        "version": "v4.1.8"
+    },
+    "symfony/expression-language": {
         "version": "v4.1.8"
     },
     "symfony/filesystem": {
@@ -251,6 +266,15 @@
     "symfony/stopwatch": {
         "version": "v4.1.8"
     },
+    "symfony/translation": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "1fb02a6e1c8f3d4232cce485c9afa868d63b115a"
+        }
+    },
     "symfony/twig-bridge": {
         "version": "v4.1.8"
     },
@@ -261,6 +285,15 @@
             "branch": "master",
             "version": "3.3",
             "ref": "369b5b29dc52b2c190002825ae7ec24ab6f962dd"
+        }
+    },
+    "symfony/validator": {
+        "version": "4.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "4.1",
+            "ref": "0cdc982334f45d554957a6167e030482795bf9d7"
         }
     },
     "symfony/var-dumper": {
