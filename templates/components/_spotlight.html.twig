@@ -24,7 +24,7 @@
                     {{ article.datecreation | date('d/m/Y') }}
                 </span>
             </div>
-            {# ICI REPOSE MON ACCROCHE #}
+            {{ article.contenu | summary }}
         </div>
     </article>
 </div>

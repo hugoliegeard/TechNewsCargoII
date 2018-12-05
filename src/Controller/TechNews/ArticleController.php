@@ -3,17 +3,12 @@
 namespace App\Controller\TechNews;
 
 
+use App\Article\ArticleType;
 use App\Controller\HelperTrait;
 use App\Entity\Article;
 use App\Entity\Categorie;
 use App\Entity\Membre;
-use FOS\CKEditorBundle\Form\Type\CKEditorType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -96,69 +91,11 @@ class ArticleController extends Controller
         $article = new Article();
         $article->setMembre($membre);
 
-        $form = $this->createFormBuilder($article)
-
-            # Champ Titre
-            ->add('titre', TextType::class, [
-                'required' => true,
-                'label' => "Titre de l'article",
-                'attr' => [
-                    'placeholder' => "Titre de l'article"
-                ]
-            ])
-
-            # Champ Catégorie
-            ->add('categorie', EntityType::class, [
-                'class' => Categorie::class,
-                'choice_label' => 'nom',
-                'expanded' => false,
-                'multiple' => false,
-                'label' => false
-            ])
-
-            # Champ Contenu
-            ->add('contenu', CKEditorType::class, [
-                'required' => true,
-                'label' => false,
-                'config' => [
-                    'toolbar' => 'standard'
-                ]
-            ])
-            # Image de l'article
-            ->add('featuredImage', FileType::class, [
-                'required' => true,
-                'label' => false,
-                'attr' => [
-                    'class' => 'dropify'
-                ]
-            ])
-            # Special et Spotlight
-            ->add('special', CheckboxType::class, [
-                'required' => false,
-                'attr' => [
-                    'data-toggle' => 'toggle',
-                    'data-on' => 'Oui',
-                    'data-off' => 'Non'
-                ]
-            ])
-            ->add('spotlight', CheckboxType::class, [
-                'required' => false,
-                'attr' => [
-                    'data-toggle' => 'toggle',
-                    'data-on' => 'Oui',
-                    'data-off' => 'Non'
-                ]
-            ])
-
-            # Bouton Submit
-            ->add('submit', SubmitType::class, [
-                'label' => 'Publier mon Article'
-            ])
-
-        ->getForm();
+        $form = $this->createForm(ArticleType::class, $article)
+            ->handleRequest($request);
 
         # Traitement des données POST
-        $form->handleRequest($request);
+        # $form->handleRequest($request);
 
         # Si le formulaire est soumis et qu'il est valide
         if( $form->isSubmitted() && $form->isValid() ) {

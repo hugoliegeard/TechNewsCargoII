@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Yaml\Tests\A;
+use Tightenco\Collect\Support\Collection;
 
 class FrontController extends Controller
 {
@@ -71,9 +72,11 @@ class FrontController extends Controller
                 Response::HTTP_MOVED_PERMANENTLY);
         }
 
+        $article = new Collection($categorie->getArticles());
+
         # Méthode 3 :
         return $this->render('front/categorie.html.twig', [
-            'articles' => $categorie->getArticles(),
+            'articles' => $article->reverse(),
             'categorie' => $categorie
         ]);
     }
