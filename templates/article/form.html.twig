@@ -31,10 +31,11 @@
 {% block content %}
 
     <div class="row">
-        <div class="col-xs-10 col-xs-offset-1">
+        <div class="col-md-8 col-sm-12">
             <h3>Rédiger un Article</h3>
             {{ form(form, {attr:{novalidate: 'novalidate' }}) }}
         </div>
+        {{ render(controller('App\\Controller\\TechNews\\FrontController::sidebar')) }}
     </div>
 
 {% endblock %}

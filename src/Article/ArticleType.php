@@ -52,7 +52,8 @@ class ArticleType extends AbstractType
                 'required' => true,
                 'label' => false,
                 'attr' => [
-                    'class' => 'dropify'
+                    'class' => 'dropify',
+                    'data-default-file' => $options['image_url']
                 ]
             ])
             # Special et Spotlight
@@ -83,7 +84,8 @@ class ArticleType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-           'data_class' => Article::class
+           'data_class' => Article::class,
+            'image_url' => null
         ]);
     }
 

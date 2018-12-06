@@ -8,8 +8,11 @@ use App\Controller\HelperTrait;
 use App\Entity\Article;
 use App\Entity\Categorie;
 use App\Entity\Membre;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -78,18 +81,19 @@ class ArticleController extends Controller
      * Formulaire pour ajouter un Article
      * @Route("/creer-un-article",
      *     name="article_new")
+     * @Security("has_role('ROLE_AUTEUR')")
      * @param Request $request
      * @return Response
      */
     public function newArticle(Request $request)
     {
         # Récupération d'un Membre
-        $membre = $this->getDoctrine()
-            ->getRepository(Membre::class)
-            ->find(2);
+        # $membre = $this->getDoctrine()
+        #    ->getRepository(Membre::class)
+        #    ->find(2);
 
         $article = new Article();
-        $article->setMembre($membre);
+        $article->setMembre($this->getUser());
 
         $form = $this->createForm(ArticleType::class, $article)
             ->handleRequest($request);
@@ -145,6 +149,38 @@ class ArticleController extends Controller
         # Affichage du Formulaire
         return $this->render('article/form.html.twig', [
            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/editer-un-article/{id<\d+>}",
+     *     name="article_edit")
+     * @param Article $article
+     * @param Request $request
+     * @param Packages $packages
+     * @return Response
+     */
+    public function editArticle(Article $article,
+                                Request $request,
+                                Packages $packages)
+    {
+
+        $options = [
+            'image_url' => $packages->getUrl('images/product/'
+                . $article->getFeaturedImage())
+        ];
+
+         $article->setFeaturedImage(
+             new File($this->getParameter('articles_assets_dir')
+                 .'/'.$article->getFeaturedImage())
+         );
+
+        $form = $this->createForm(ArticleType::class, $article, $options)
+            ->handleRequest($request);
+
+        # Affichage du Formulaire
+        return $this->render('article/form.html.twig', [
+            'form' => $form->createView()
         ]);
     }
 }
