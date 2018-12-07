@@ -203,4 +203,16 @@ class Article
     {
         $this->membre = $membre;
     }
+
+    /**
+     * Vérifie qu'un Membre est bien
+     * auteur de l'article.
+     * @param Membre|null $membre
+     * @return bool
+     */
+    public function isAuteur(?Membre $membre = null): bool
+    {
+        return $membre && $this->getMembre()->getId() === $membre->getId();
+    }
+
 }

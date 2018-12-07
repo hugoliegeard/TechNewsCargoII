@@ -33,6 +33,19 @@
     <div class="row">
         <div class="col-md-8 col-sm-12">
             <h3>Rédiger un Article</h3>
+
+            {% for message in app.flashes('notice') %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
             {{ form(form, {attr:{novalidate: 'novalidate' }}) }}
         </div>
         {{ render(controller('App\\Controller\\TechNews\\FrontController::sidebar')) }}

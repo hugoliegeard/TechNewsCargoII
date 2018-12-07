@@ -141,8 +141,10 @@ class FrontController extends Controller
     /**
      * Gérer l'affichage de
      * la sidebar
+     * @param Article|null $article
+     * @return Response
      */
-    public function sidebar()
+    public function sidebar(?Article $article = null)
     {
         # Récupération du Repository
         $repository = $this->getDoctrine()
@@ -157,7 +159,8 @@ class FrontController extends Controller
         # Rendu de la vue
         return $this->render('components/_sidebar.html.twig', [
             'articles' => $articles,
-            'specials' => $specials
+            'specials' => $specials,
+            'article' => $article
         ]);
     }
 }

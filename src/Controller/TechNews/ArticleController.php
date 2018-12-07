@@ -43,8 +43,7 @@ class ArticleController extends Controller
             ->setNom('LIEGEARD')
             ->setEmail('hugo.liegeard@tech.news')
             ->setPassword('test')
-            ->setRoles(['ROLE_AUTEUR'])
-        ;
+            ->setRoles(['ROLE_AUTEUR']);
 
         # Création de l'article
         $article = new Article();
@@ -56,8 +55,7 @@ class ArticleController extends Controller
             ->setSpotlight(0)
             ->setSpecial(1)
             ->setCategorie($categorie)
-            ->setMembre($membre)
-        ;
+            ->setMembre($membre);
 
         # On sauvegarde le tout avec Doctrine
         $em = $this->getDoctrine()->getManager();
@@ -68,12 +66,12 @@ class ArticleController extends Controller
 
         # Affichage d'une réponse.
         return new Response(
-          'Nouvel Article ID : '
-          . $article->getId()
-          . ' dans la catégorie : '
-          . $categorie->getNom()
-          . ' de l\'auteur : '
-          . $membre->getPrenom()
+            'Nouvel Article ID : '
+            . $article->getId()
+            . ' dans la catégorie : '
+            . $categorie->getNom()
+            . ' de l\'auteur : '
+            . $membre->getPrenom()
         );
     }
 
@@ -102,28 +100,126 @@ class ArticleController extends Controller
         # $form->handleRequest($request);
 
         # Si le formulaire est soumis et qu'il est valide
-        if( $form->isSubmitted() && $form->isValid() ) {
+        if ($form->isSubmitted() && $form->isValid()) {
 
             #dump($article);
             # 1. Traitement de l'upload de l'image
 
-             /** @var UploadedFile $featuredImage */
+            /** @var UploadedFile $featuredImage */
             $featuredImage = $article->getFeaturedImage();
 
-            $fileName = $this->slugify($article->getTitre())
-                . '.' . $featuredImage->guessExtension();
+            if (null !== $featuredImage) {
+                $fileName = $this->slugify($article->getTitre())
+                    . '.' . $featuredImage->guessExtension();
 
-            try {
-                $featuredImage->move(
-                    $this->getParameter('articles_assets_dir'),
-                    $fileName
-                );
-            } catch (FileException $e) {
+                try {
+                    $featuredImage->move(
+                        $this->getParameter('articles_assets_dir'),
+                        $fileName
+                    );
+                } catch (FileException $e) {
 
+                }
+
+                # Mise à jour de l'image
+                $article->setFeaturedImage($fileName);
+
+                # 2. Mise à jour du Slug
+                $article->setSlug($this->slugify($article->getTitre()));
+
+                # 3. Sauvegarde en BDD
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($article);
+                $em->flush();
+
+                # 4. Notification
+                $this->addFlash('notice',
+                    'Félicitation, votre article est en ligne !');
+
+                # 5. Redirection vers l'article créé
+                return $this->redirectToRoute('index_article', [
+                    'categorie' => $article->getCategorie()->getSlug(),
+                    'slug' => $article->getSlug(),
+                    'id' => $article->getId()
+                ]);
+
+            } else {
+
+                # 4. Notification
+                $this->addFlash('error',
+                    "N'oubliez pas de choisir une image d'illustration");
             }
+        }
 
-            # Mise à jour de l'image
-            $article->setFeaturedImage($fileName);
+        # Affichage du Formulaire
+        return $this->render('article/form.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/editer-un-article/{id<\d+>}",
+     *     name="article_edit")
+     * @Security("article.isAuteur(user)")
+     * @param Article $article
+     * @param Request $request
+     * @param Packages $packages
+     * @return Response
+     */
+    public function editArticle(Article $article,
+                                Request $request,
+                                Packages $packages)
+    {
+
+        # On passe à notre formulaire l'URL de la featuredImage
+        $options = [
+            'image_url' => $packages->getUrl('images/product/'
+                . $article->getFeaturedImage())
+        ];
+
+        # Récupération de l'image
+        $featuredImageName = $article->getFeaturedImage();
+
+        # Notre formulaire attend une instance de File pour l'edition
+        # de la featuredImage
+        $article->setFeaturedImage(
+            new File($this->getParameter('articles_assets_dir')
+                . '/' . $featuredImageName)
+        );
+
+        # Création / Récupération du Formulaire
+        $form = $this->createForm(ArticleType::class, $article, $options)
+            ->handleRequest($request);
+
+        # Si le formulaire est soumis et qu'il est valide
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            #dump($article);
+            # 1. Traitement de l'upload de l'image
+
+            /** @var UploadedFile $featuredImage */
+            $featuredImage = $article->getFeaturedImage();
+
+            if (null !== $featuredImage) {
+
+                $fileName = $this->slugify($article->getTitre())
+                    . '.' . $featuredImage->guessExtension();
+
+                try {
+                    $featuredImage->move(
+                        $this->getParameter('articles_assets_dir'),
+                        $fileName
+                    );
+                } catch (FileException $e) {
+
+                }
+
+                # Mise à jour de l'image
+                $article->setFeaturedImage($fileName);
+
+            } else {
+                $article->setFeaturedImage($featuredImageName);
+            }
 
             # 2. Mise à jour du Slug
             $article->setSlug($this->slugify($article->getTitre()));
@@ -138,45 +234,11 @@ class ArticleController extends Controller
                 'Félicitation, votre article est en ligne !');
 
             # 5. Redirection vers l'article créé
-            return $this->redirectToRoute('index_article', [
-               'categorie' => $article->getCategorie()->getSlug(),
-               'slug' => $article->getSlug(),
-               'id' => $article->getId()
+            return $this->redirectToRoute('article_edit', [
+                'id' => $article->getId()
             ]);
 
         }
-
-        # Affichage du Formulaire
-        return $this->render('article/form.html.twig', [
-           'form' => $form->createView()
-        ]);
-    }
-
-    /**
-     * @Route("/editer-un-article/{id<\d+>}",
-     *     name="article_edit")
-     * @param Article $article
-     * @param Request $request
-     * @param Packages $packages
-     * @return Response
-     */
-    public function editArticle(Article $article,
-                                Request $request,
-                                Packages $packages)
-    {
-
-        $options = [
-            'image_url' => $packages->getUrl('images/product/'
-                . $article->getFeaturedImage())
-        ];
-
-         $article->setFeaturedImage(
-             new File($this->getParameter('articles_assets_dir')
-                 .'/'.$article->getFeaturedImage())
-         );
-
-        $form = $this->createForm(ArticleType::class, $article, $options)
-            ->handleRequest($request);
 
         # Affichage du Formulaire
         return $this->render('article/form.html.twig', [

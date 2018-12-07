@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -98,7 +97,7 @@ class Membre implements UserInterface
     {
         $this->addRole($role);
         $this->articles = new ArrayCollection();
-        $this->dateInscription = new DateTime();
+        $this->dateInscription = new \DateTime();
     }
 
     public function getId(): ?int
@@ -171,9 +170,9 @@ class Membre implements UserInterface
         return $this->derniereConnexion;
     }
 
-    public function setDerniereConnexion(?\DateTimeInterface $derniereConnexion): self
+    public function setDerniereConnexion(string $timestamp = 'now'): self
     {
-        $this->derniereConnexion = $derniereConnexion;
+        $this->derniereConnexion = new \DateTime($timestamp);
 
         return $this;
     }
