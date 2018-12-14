@@ -28,7 +28,8 @@ class FrontController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository(Article::class);
 
-        $articles = $repository->findBy([], ['id' => 'DESC']);
+//        $articles = $repository->findBy([], ['id' => 'DESC']);
+        $articles = $repository->findPublishedArticles();
         $spotlight = $repository->findSpotlightArticles();
 
         # return new Response("<html><body><h1>PAGE D'ACCUEIL</h1></body></html>");

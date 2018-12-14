@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Article;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -30,11 +31,12 @@ class ArticleRepository extends ServiceEntityRepository
     public function findLatestArticles()
     {
         return $this->createQueryBuilder('a')
+            ->where('a.status LIKE :status')
+            ->setParameter('status', "%published%")
             ->orderBy('a.id', 'DESC')
             ->setMaxResults(self::MAX_RESULTS)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
     /**
@@ -58,8 +60,20 @@ class ArticleRepository extends ServiceEntityRepository
             ->orderBy('a.id', 'DESC')
             # On finalise
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
+    }
+
+    /**
+     * Récupérer les articles en spotlight
+     */
+    public function findPublishedArticles()
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.status LIKE :status')
+            ->setParameter('status', "%published%")
+            ->orderBy('a.id', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -69,11 +83,12 @@ class ArticleRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('a')
             ->where('a.spotlight = 1')
+            ->andWhere('a.status LIKE :status')
+            ->setParameter('status', "%published%")
             ->orderBy('a.id', 'DESC')
             ->setMaxResults(self::MAX_RESULTS)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
     /**
@@ -83,12 +98,94 @@ class ArticleRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('a')
             ->where('a.special = 1')
+            ->andWhere('a.status LIKE :status')
+            ->setParameter('status', "%published%")
             ->orderBy('a.id', 'DESC')
             ->setMaxResults(self::MAX_RESULTS)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
+    /**
+     * Récupérer tous les articles d'un Auteur
+     * par rapport à leur statut.
+     * @param $idAuteur
+     * @param $statut
+     * @return mixed
+     */
+    public function findAuthorArticlesByStatus($idAuteur, $statut)
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.membre = :membre_id')
+            ->setParameter('membre_id', $idAuteur)
+            ->andWhere('a.status LIKE :status ')
+            ->setParameter('status', "%$statut%")
+            ->orderBy('a.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Compter tous les articles d'un Auteur
+     * par rapport à leur statut.
+     * @param $idAuteur
+     * @param $statut
+     * @return mixed
+     */
+    public function countAuthorArticlesByStatus($idAuteur, $statut)
+    {
+        try {
+            return $this->createQueryBuilder('a')
+                ->select('COUNT(a)')
+                ->where('a.membre = :membre_id')
+                ->setParameter('membre_id', $idAuteur)
+                ->andWhere('a.status LIKE :status')
+                ->setParameter('status', "%$statut%")
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (NonUniqueResultException $e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Récupérer tous les articles
+     * par rapport à leur statut.
+     * @param $statut
+     * @return mixed
+     */
+    public function findArticlesByStatus($statut)
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.status LIKE :status ')
+            ->setParameter('status', "%$statut%")
+            ->andWhere('a.status NOT LIKE :refused')
+            ->setParameter('refused', "%refused%")
+            ->orderBy('a.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Compter tous les articles
+     * par rapport à leur statut.
+     * @param $statut
+     * @return mixed
+     */
+    public function countArticlesByStatus($statut)
+    {
+        try {
+            return $this->createQueryBuilder('a')
+                ->select('COUNT(a)')
+                ->andWhere('a.status LIKE :status')
+                ->setParameter('status', "%$statut%")
+                ->andWhere('a.status NOT LIKE :refused')
+                ->setParameter('refused', "%refused%")
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (NonUniqueResultException $e) {
+            return 0;
+        }
+    }
 
 }

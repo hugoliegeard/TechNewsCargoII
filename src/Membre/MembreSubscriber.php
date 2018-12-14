@@ -4,6 +4,7 @@ namespace App\Membre;
 
 
 use App\Entity\Membre;
+use App\Entity\Newsletter;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
@@ -27,7 +28,8 @@ class MembreSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-          SecurityEvents::INTERACTIVE_LOGIN => 'onSecurityInteractiveLogin'
+            SecurityEvents::INTERACTIVE_LOGIN => 'onSecurityInteractiveLogin',
+            MembreEvents::MEMBRE_CREATED => 'onMembreCreated'
         ];
     }
 
@@ -37,10 +39,16 @@ class MembreSubscriber implements EventSubscriberInterface
         $membre = $event->getAuthenticationToken()->getUser();
 
         if($membre instanceof Membre) {
-
             $membre->setDerniereConnexion();
             $this->em->flush();
-
         }
+    }
+
+    public function onMembreCreated(MembreEvent $membreEvent)
+    {
+        $newsletter = new Newsletter();
+        $newsletter->setEmail($membreEvent->getMembre()->getEmail());
+        $this->em->persist($newsletter);
+        $this->em->flush();
     }
 }

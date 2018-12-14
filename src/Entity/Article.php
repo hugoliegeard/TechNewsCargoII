@@ -77,6 +77,12 @@ class Article
      */
     private $membre;
 
+
+    /**
+     * @ORM\Column(type="array")
+     */
+    private $status;
+
     public function __construct()
     {
         $this->dateCreation = new \DateTime();
@@ -213,6 +219,22 @@ class Article
     public function isAuteur(?Membre $membre = null): bool
     {
         return $membre && $this->getMembre()->getId() === $membre->getId();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param mixed $status
+     */
+    public function setStatus($status): void
+    {
+        $this->status = $status;
     }
 
 }

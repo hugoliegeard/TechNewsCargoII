@@ -4,8 +4,11 @@ namespace App\Controller\TechNews;
 
 
 use App\Entity\Membre;
+use App\Membre\MembreEvent;
+use App\Membre\MembreEvents;
 use App\Membre\MembreType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -17,11 +20,13 @@ class MembreController extends Controller
      *     methods={"GET", "POST"},
      *     name="membre_inscription")
      * @param Request $request
+     * @param EventDispatcherInterface $dispatcher
      * @param UserPasswordEncoderInterface $passwordEncoder
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
     public function inscription(Request $request,
+                                EventDispatcherInterface $dispatcher,
                                 UserPasswordEncoderInterface $passwordEncoder)
     {
         # Création d'un Utilisateur
@@ -41,6 +46,10 @@ class MembreController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($membre);
             $em->flush();
+
+            # On emet un évènement, la création d'un membre
+            $dispatcher->dispatch(MembreEvents::MEMBRE_CREATED,
+                new MembreEvent($membre));
 
             # 4. Notification
             $this->addFlash('notice',
